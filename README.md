@@ -1,6 +1,4 @@
 # Homelab Cluster
-
-These are the yaml configurations for my homelab cluster. microk8s is used to
 bootstrap a cluster running across three nodes. Before applying any of the
 manifests here, the following plugins should be enabled:
 
