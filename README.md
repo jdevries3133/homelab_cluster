@@ -9,6 +9,7 @@ manifests here, the following plugins should be enabled:
 - ingress
 - openebs
 - storage
+- prometheus
 
 Then, follow
 [this guide](https://www.madalin.me/wpk8s/2021/050/microk8s-letsencrypt-cert-manager-https.html)
@@ -16,6 +17,12 @@ for setting up SSL certificates.
 
 This creates a cluster ready to deploy web apps, where the apps can define
 their own routing, and application deployment can be done with terraform.
+
+## Monitoring
+
+`microk8s enable prometheus` does 99% of the work. Just apply the prometheus_ingress manifest
+at the root of this repository to bring traffic in. Open up the manifest and change the
+host as necessary.
 
 ## Backup
 
