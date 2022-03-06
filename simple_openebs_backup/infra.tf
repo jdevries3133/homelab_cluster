@@ -16,7 +16,7 @@ terraform {
 }
 
 provider "kubernetes" {
-  config_path = "~/.kube/prod_config"
+  config_path = "~/.kube/config"
 }
 
 resource "kubernetes_namespace" "backup_test" {
@@ -87,6 +87,7 @@ resource "kubernetes_persistent_volume_claim" "local" {
     name      = "local"
     namespace = kubernetes_namespace.backup_test.metadata[0].name
   }
+  wait_until_bound = false
   spec {
     resources {
       requests = {
@@ -104,6 +105,7 @@ resource "kubernetes_persistent_volume_claim" "replicated" {
     name      = "replicated"
     namespace = kubernetes_namespace.backup_test.metadata[0].name
   }
+  wait_until_bound = false
   spec {
     resources {
       requests = {
