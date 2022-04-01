@@ -16,10 +16,19 @@ First, install microk8s and enable the following plugins:
 
 ## SSL Certificates & CertManager
 
-Follow
-[this guide](https://www.madalin.me/wpk8s/2021/050/microk8s-letsencrypt-cert-manager-https.html)
-for setting up SSL certificates. The manifest at `./clusterissuer.yml` creates
-a Cluster Issuer as described in the guide.
+[This guide](https://www.madalin.me/wpk8s/2021/050/microk8s-letsencrypt-cert-manager-https.html)
+describes how to install Cert Manager in the cluster. It is **very important**
+to use the latest version of cert manager, which, I guess, will only diverge
+further from that blog post over time. Most importantly, use the strategy
+for installing Cert Manager where you just apply the latest manifest directly
+from the GitHub release. For example, for version 1.7.2:
+
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.7.2/cert-manager.yaml
+```
+
+The manifest at `./clusterissuer.yml` creates a Cluster Issuer which uses
+letsencrypt.
 
 Something that is a little weird is that I followed the guide and named this
 issuer `letsencrypt-prod`, whereas most people just name it `letsencrypt`.
