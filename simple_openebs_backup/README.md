@@ -1,14 +1,11 @@
 This application creates a test fixture against which OpenEBS backup & restore
 can be tested. In my case, I'm doing backup and restore with Velero and Restic.
-The setup, backup, and recovery procedures are documented in the
-[top-level README](../README.md)
 
 This application creates a test fixture which you can use to manually validate
 that things are working as expected. Specifically, it deploys an application
 which mounts two volumes, an openebs-jiva volume at `/replicated`, and a
 local volume at `/local`. Each second, a random joke is written into a file
-named `jokes.log` inside each of those mount points. The IaC will mount
-replicated and host volumes, respectively onto those mount points.
+named `jokes.log` inside each of those mount points.
 
 To validate that the backup/restore procedures work, follow these steps:
 

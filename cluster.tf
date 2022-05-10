@@ -1,11 +1,9 @@
 terraform {
-
   backend "s3" {
     bucket = "my-sites-terraform-remote-state"
     key    = "cluster"
     region = "us-east-2"
   }
-
   required_providers {
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -14,6 +12,10 @@ terraform {
     helm = {
       source  = "hashicorp/helm"
       version = ">= 2.4.1"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "1.14.0"
     }
   }
 }
@@ -28,23 +30,41 @@ provider "helm" {
   }
 }
 
-resource "kubernetes_namespace" "openebs" {
-  metadata {
-    name = "openebs"
-  }
+provider "kubectl" {
+  config_path = "~/.kube/config"
 }
 
-resource "helm_release" "openebs" {
-  name       = "openebs"
-  namespace  = kubernetes_namespace.openebs.metadata.0.name
-  repository = "https://openebs.github.io/charts"
-  chart      = "openebs"
-  version    = "3.2.0"
 
-  set {
-    name  = "jiva.enabled"
-    value = true
-  }
+data "http" "certmanager" {
+  url = "https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml"
 }
 
+resource "kubectl_manifest" "certmanager" {
+  yaml_body = data.http.certmanager.body
+}
+
+resource "kubectl_manifest" "issuer" {
+  yaml_body = file("./manifests/clusterissuer.yml")
+
+  depends_on = [
+    kubectl_manifest.certmanager
+  ]
+}
+
+resource "kubectl_manifest" "kibana_ingress" {
+  yaml_body = file("./manifests/kibana_ingress.yml")
+}
+
+resource "kubectl_manifest" "prometheus_ingress" {
+  yaml_body = file("./manifests/prometheus_ingress.yml")
+}
+
+
+resource "kubectl_manifest" "nginx_service_monitor" {
+  yaml_body = file("./manifests/nginx_service.yml")
+}
+
+resource "kubectl_manifest" "nginx_service" {
+  yaml_body = file("./manifests/nginx_service_monitor.yml")
+}
 

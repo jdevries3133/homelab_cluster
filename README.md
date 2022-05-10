@@ -6,55 +6,42 @@ Directions for setting up my cluster, which runs across three nodes.
 
 First, install microk8s and enable the following plugins:
 
-- dashboard
 - dns
 - helm3
 - ingress
-- openebs
-- storage
 - prometheus
+- openebs
+- fluentd
 
-## SSL Certificates & CertManager
+After bootstrapping the cluster, remember to get context config with
+`sudo microk8s config`, and copy that new config to wherever it is needed
+(GitHub action runners, personal machine, etc.).
 
-[This guide](https://www.madalin.me/wpk8s/2021/050/microk8s-letsencrypt-cert-manager-https.html)
-describes how to install Cert Manager in the cluster. It is **very important**
-to use the latest version of cert manager, which, I guess, will only diverge
-further from that blog post over time. Most importantly, use the strategy
-for installing Cert Manager where you just apply the latest manifest directly
-from the GitHub release. For example, for version 1.7.2:
+## Terraform (the rest of the owl)
 
-```bash
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.7.2/cert-manager.yaml
-```
+The terraform module at the root of the project does some additional work to
+set up the cluster:
 
-The manifest at `./clusterissuer.yml` creates a Cluster Issuer which uses
-letsencrypt.
+- install certmanager by downloading manifests from the web
+- create certmanager issuer via letsencrypt
+- define ingresses for kibana and grafana
+- define a service and ServiceMonitor for nginx metrics
 
-Something that is a little weird is that I followed the guide and named this
-issuer `letsencrypt-prod`, whereas most people just name it `letsencrypt`.
-You always need to be aware of this distinction since anything that uses this
-issuer will need to reference it by name.
+## Velero
 
-## Monitoring
+### Setup
 
-`microk8s enable prometheus` does 99% of the work. Just apply the
-`prometheus_ingress` manifest at the root of this repository to bring traffic
-in.
-
-## Backup
-
-Setup was kind of a manual pain in the butt, but these are the steps:
+Setup was kind of a manual pain in the butt (although I think a lot of this
+could be automated with terraform later), but these are the steps:
 
 1. Follow [this guide.](https://github.com/vmware-tanzu/velero-plugin-for-aws#setup)
    no need to do the while kubetoiam thing it suggests
-2. Remember to add install flags `--use-restic` and `--default-volumes-to-restic`
-   when installing velero
-3. Patch the velero setup as described in [this GitHub issue,](https://github.com/vmware-tanzu/velero/issues/2858)
-   which is necessary becaues microk8s has its pods stored in a different place
-   than default upstream kubelet.
+2. Remember to add install flags `--use-restic` when installing velero
+
+### Validate Install
 
 At this point, you can use the Velero CLI to schedule regular backups. Also,
-the app in `./simple_openebs_backup` will ensure that everythiing works
+the app in `./simple_openebs_backup` will ensure that everything works
 properly. It provisions both a replicated and local storage volume, mounts
 it to a pod, and runs a very simple python script that just writes jokes
 into log files inside of each volume. You can use this as a holistic test
@@ -66,25 +53,30 @@ of the Velero / Restic backups by doing the following:
 3. Delete the namespace, change the log files, or simulate some other disaster.
 4. Restore from the backup
 
-## Disaster Recovery
+### Backup
 
 To run a snapshot that cuts across the whole cluster broadly, use this command:
 
 ```bash
-velero backup create $BACKUP_NAME
+velero backup create $BACKUP_NAME --default-volumes-to-restic
 ```
 
 However, it is better to create a scheduled backup like this:
 
 ```bash
-velero schedule create cluster-backup --schedule="* 0 * * *"
+velero schedule create cluster-backup --schedule="* 0 * * *" --default-volumes-to-restic
 ```
 
 The CLI is pretty self-documenting, and there are a lot of options like which
 namespaces to backup, when backups should expire (self-delete), etc.
 
 If velero was installed with the parameter `--default-volumes-to-restic`, this
-will properly backup the whole cluster, including persistent volumes.
+will properly backup the whole cluster, including persistent volumes. It is
+important to remember to include this parameter, because otherwise volumes
+without a special annotation won't be backed up. If the backup takes a short
+amount of time, that's a smell test that this parameter was probably forgotten.
+
+### Restore
 
 Restoring is very easy. From the most recent backup, just run
 
@@ -96,5 +88,4 @@ This will iterate through every object in the cluster and restore anything
 that is not present in the current cluster. In testing, I, for example, deleted
 a whole namepace and then ran this command. It was able to roll the system
 back to the state it was in at the last backup, including restoring data in
-persistent volumes from the S3 bucket. However, it didn't seem to touch
-namespaces that were backuped but otherwise unaffected.
+persistent volumes from the S3 bucket.
