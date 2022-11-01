@@ -39,8 +39,9 @@ data "http" "certmanager" {
   url = "https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml"
 }
 
+
 resource "kubectl_manifest" "certmanager" {
-  yaml_body = data.http.certmanager.body
+  yaml_body = file("./manifests/cert-manager.yaml")
 }
 
 resource "kubectl_manifest" "issuer" {
@@ -49,10 +50,6 @@ resource "kubectl_manifest" "issuer" {
   depends_on = [
     kubectl_manifest.certmanager
   ]
-}
-
-resource "kubectl_manifest" "kibana_ingress" {
-  yaml_body = file("./manifests/kibana_ingress.yml")
 }
 
 resource "kubectl_manifest" "prometheus_ingress" {
