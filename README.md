@@ -2,16 +2,56 @@
 
 Directions for setting up my cluster, which runs across three nodes.
 
+
 ## microk8s
 
-First, install microk8s and enable the following plugins:
+### Installation
 
-- dns
-- helm3
-- ingress
-- prometheus
-- openebs
-- fluentd
+Install microk8s version 1.23:
+
+```bash
+sudo snap install microk8s --channel=1.23/stable --classic
+```
+
+### Public IP Setup
+
+After installation, you need to make one small configuration file change if you
+want to be able to connect to the cluster from anywhere. Look at
+`/var/snap/microk8s/current/certs/csr.conf.template`. You will see an `[
+alt_names ]` section in this toml file, which will contain a list of IPs for
+which microk8s will generate a self-signed SSL certificate. It looks like this:
+
+```
+[ alt_names ]
+DNS.1 = kubernetes
+DNS.2 = kubernetes.default
+DNS.3 = kubernetes.default.svc
+DNS.4 = kubernetes.default.svc.cluster
+DNS.5 = kubernetes.default.svc.cluster.local
+IP.1 = 127.0.0.1
+IP.2 = 10.152.183.1
+#MOREIPS
+```
+
+If you want the generated self-signed certificate to include your public IP,
+add it!
+
+```
+IP.8 = xx.xx.xx.xx
+```
+
+Then run `microk8s reset` to ensure it picks up the change.
+
+### Plugins
+
+Then, enable the following plugins:
+
+- `dns`
+- `helm3`
+- `ingress`
+- `prometheus`
+- `openebs`
+- `fluentd`
 
 After bootstrapping the cluster, remember to get context config with
 `sudo microk8s config`, and copy that new config to wherever it is needed

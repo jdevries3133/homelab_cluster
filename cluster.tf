@@ -34,12 +34,6 @@ provider "kubectl" {
   config_path = "~/.kube/config"
 }
 
-
-data "http" "certmanager" {
-  url = "https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml"
-}
-
-
 resource "kubectl_manifest" "certmanager" {
   yaml_body = file("./manifests/cert-manager.yaml")
 }
