@@ -1,131 +1,99 @@
-# Homelab Cluster
+# My Homelab Cluster
 
-Directions for setting up my cluster, which runs across three nodes.
+These are the scripts and configuration for my simple homelab Kubernetes
+cluster. The cluster uses several technologies:
 
+| Technology        | Purpose                                                  |
+| ----------------- | -------------------------------------------------------- |
+| containerd / runc | container runtime                                        |
+| calico            | networking between containers                            |
+| velero & restic   | backup and restore of cluster state & persistent volumes |
+| certmanager       | automated issuance of LetsEncrypt certificates           |
 
-## microk8s
+## Prep Work
 
-### Installation
+Before doing anything, there are a few steps to perform; especially if you're
+adapting this work for a homelab setup that is not mine.
 
-Install microk8s version 1.23:
+First, my node hostnames are hard-coded in these scripts; YMMV. Grep for
+`big-boi`, `nick`, `tweedledee`, and `dweedledum`, which are the host names of
+my machines, and replace them with your own!
 
-```bash
-sudo snap install microk8s --channel=1.23/stable --classic
-```
-
-### Public IP Setup
-
-After installation, you need to make one small configuration file change if you
-want to be able to connect to the cluster from anywhere. Look at
-`/var/snap/microk8s/current/certs/csr.conf.template`. You will see an `[
-alt_names ]` section in this toml file, which will contain a list of IPs for
-which microk8s will generate a self-signed SSL certificate. It looks like this:
-
-```
-[ alt_names ]
-DNS.1 = kubernetes
-DNS.2 = kubernetes.default
-DNS.3 = kubernetes.default.svc
-DNS.4 = kubernetes.default.svc.cluster
-DNS.5 = kubernetes.default.svc.cluster.local
-IP.1 = 127.0.0.1
-IP.2 = 10.152.183.1
-#MOREIPS
-```
-
-If you want the generated self-signed certificate to include your public IP,
-add it!
+Also, I do not have DNS setup in my home network. If you have DNS, that's
+probably ideal and you can skip this. Instead, I go into my router
+configuration and give my nodes static IPs, and then I put the host names into
+the `/etc/hosts` file on each of the 4 nodes. For example, the `/etc/hosts`
+file for `big-boi`:
 
 ```
-IP.8 = xx.xx.xx.xx
+127.0.0.1 big-boi
+192.168.1.3 nick
+192.168.1.4 tweedledee
+192.168.1.9 dweedledum
 ```
 
-Then run `microk8s reset` to ensure it picks up the change.
+## Bootstrapping the Nodes
 
-### Plugins
+> ⚠️ All scripts here must be run as root with `sudo`! ⚠️
 
-Then, enable the following plugins:
+First `./bootstrap/cp_scripts.sh` can be used to copy the bootstrap scripts to
+each of your nodes. Note that you may need to tweak the ssh command to work in
+the way that you normally ssh onto your machines. For example, I specify my
+username in my `~/.ssh/config` file, so I can simply pass the hostname as a
+single argument to `ssh` or `scp`, and it will work; YMMV.
 
-- `dns`
-- `helm3`
-- `ingress`
-- `prometheus`
-- `openebs`
-- `fluentd`
+There are two "setup" scripts:
 
-After bootstrapping the cluster, remember to get context config with
-`sudo microk8s config`, and copy that new config to wherever it is needed
-(GitHub action runners, personal machine, etc.).
+- `./bootstrap/setup_node.sh` (all nodes)
+- `./bootstrap/init_control_plane_node.sh` (control-plane node only)
 
-## Terraform (the rest of the owl)
+The first script must be ran on every node. It installs the container runtime
+and container networking interface (CNI).
 
-The terraform module at the root of the project does some additional work to
-set up the cluster:
+### Bootstrapping the Control-Plane
 
-- install certmanager by downloading manifests from the web
-- create certmanager issuer via letsencrypt
-- define ingresses for kibana and grafana
-- define a service and ServiceMonitor for nginx metrics
+First, you will need to bootstrap your control-plane node. I run a single
+control-plane node which is perfectly adequate for homelab use-cases.
 
-## Velero
+> ⚠️ Change the `PUBLIC_IP_ADDRESS` in the `setup_node.sh` script to your own
+> public IP! ⚠️
 
-### Setup
+To do this, run the `./bootstrap/init_control_plane_node.sh`
 
-Setup was kind of a manual pain in the butt (although I think a lot of this
-could be automated with terraform later), but these are the steps:
+Keep your eyes peeled -- the output of this script will include important
+details for next steps:
 
-1. Follow [this guide.](https://github.com/vmware-tanzu/velero-plugin-for-aws#setup)
-   no need to do the while kubetoiam thing it suggests
-2. Remember to add install flags `--use-restic` when installing velero
+```text
+# Command to run to add another control-plane node
+kubeadm join big-boi:6443 --token xxxxx \
+    --discovery-token-ca-cert-hash sha256:597d3c1ef8f7ca4238b877245e0e9b021e1d3fa6cb4b027d04b9565d4420835c \
+    --control-plane 
 
-### Validate Install
-
-At this point, you can use the Velero CLI to schedule regular backups. Also,
-the app in `./simple_openebs_backup` will ensure that everything works
-properly. It provisions both a replicated and local storage volume, mounts
-it to a pod, and runs a very simple python script that just writes jokes
-into log files inside of each volume. You can use this as a holistic test
-of the Velero / Restic backups by doing the following:
-
-1. Deploy the app, observe that it started up, mounted each volume, and is
-   writing jokes to the log files.
-2. Create a backup.
-3. Delete the namespace, change the log files, or simulate some other disaster.
-4. Restore from the backup
-
-### Backup
-
-To run a snapshot that cuts across the whole cluster broadly, use this command:
-
-```bash
-velero backup create $BACKUP_NAME --default-volumes-to-restic
+# Command to run to add a worker node
+kubeadm join big-boi:6443 --token xxxxx \
+        --discovery-token-ca-cert-hash sha256:597d3c1ef8f7ca4238b877245e0e9b021e1d3fa6cb4b027d04b9565d4420835c 
 ```
 
-However, it is better to create a scheduled backup like this:
+Of course, if you miss this information, you can always use kubeadm to
+re-generate these join commands later.
 
-```bash
-velero schedule create cluster-backup --schedule="* 0 * * *" --default-volumes-to-restic
-```
+### Adding Workers or Control-Plane Nodes
 
-The CLI is pretty self-documenting, and there are a lot of options like which
-namespaces to backup, when backups should expire (self-delete), etc.
+Now that your first node is up and running, adding additional nodes is as
+simple as:
 
-If velero was installed with the parameter `--default-volumes-to-restic`, this
-will properly backup the whole cluster, including persistent volumes. It is
-important to remember to include this parameter, because otherwise volumes
-without a special annotation won't be backed up. If the backup takes a short
-amount of time, that's a smell test that this parameter was probably forgotten.
+1. Running the `setup_node.sh` script on the new node
+2. Copying and pasting the `kubeadm` command from before with the connection
+   token
 
-### Restore
+`kubeadm` should then indicate that it was able to join the cluster.
 
-Restoring is very easy. From the most recent backup, just run
+## Using `kubectl`
 
-```bash
-velero restore create $RESTORE_NAME --from-backup $LATEST_BACKUP
-```
-
-This will iterate through every object in the cluster and restore anything
-that is not present in the current cluster. In testing, I, for example, deleted
-a whole namepace and then ran this command. It was able to roll the system
-back to the state it was in at the last backup, including restoring data in
-persistent volumes from the S3 bucket.
+The administrator `kubconfig` file is at `/etc/kubernetes/admin.conf` on the
+node where you initialized the cluster. I just copy and paste this file onto my
+own machine, and change the host to my public IP so that I can use kubectl to
+talk to my cluster from anywhere. Obviously, this allows you to connect to the
+cluster as the admin user, and it's best to use the principle of least
+privilege always. Consider creating depermissioned users for collaborators or
+CI/CD as needed.
