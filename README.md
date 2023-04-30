@@ -100,11 +100,18 @@ CI/CD as needed.
 
 ## The Rest of the Owl
 
-Now that your cluster is up and you can talk to it with kubectl, you can use
-terraform to install the rest of the stuff:
+The terraform config in `cluster.tf` will populate the cluster with everything
+you'd want as a cluster administrator, including:
 
-- nginx ingress
-- cert manager w/cluster issuer (make sure to change the email address!)
-- prometheus/grafana, and kibana/elastic search
+- `nginx` ingress, making any worker node a suitable HTTP / HTTPS entrypoint
+- `openebs` storage
+- logging and monitoring stacks (prometheus/grafana & elastic search / kibana)
+- `certmanager` for automatic SSL certificate issuance
 
-Just run `terraform apply`.
+### Setting Up Persistent Storage
+
+I have a large 1tb SSD on a single node which is used to satisfy all
+Persistent Volume Claims (PVC) in the cluster.
+
+Terraform will prompt you for the path to this device as well as the IP address
+of the node that has this storage when you run `terraform apply`.

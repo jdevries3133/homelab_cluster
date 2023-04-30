@@ -1,0 +1,8 @@
+
+localprovisioner:
+  basePath: "/mnt/openebs-ssd"
+  nodeSelector:
+    kubernetes.io/hostname: dweedledee
+  # we don't want an `openebs-device` storageclass
+  deviceClass:
+    enabled: false

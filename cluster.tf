@@ -115,12 +115,29 @@ resource "kubernetes_manifest" "cluster_issuer" {
   }
 }
 
-resource "kubernetes_storage_class" "default" {
+resource "kubernetes_namespace" "openebs" {
   metadata {
-    name = "default"
+    name = "openebs"
   }
-  storage_provisioner = "kubernetes.io/no-provisioner"
-  volume_binding_mode = "WaitForFirstConsumer"
+}
+
+variable "ssd_node_mount_path" {
+  description = "Mount path of a SSD for persistent storage"
+  type        = string
+}
+
+variable "ssd_node_hostname" {
+  description = "Hostname of the node with a SSD for persistent storage"
+  type        = string
 }
 
 
+resource "helm_release" "openebs" {
+  name       = "openebs"
+  namespace  = kubernetes_namespace.openebs.metadata.0.name
+  repository = "https://openebs.github.io/charts"
+  chart      = "openebs"
+  version    = "3.6.0"
+
+  values = [ file("./openebs_values.yml") ]
+}

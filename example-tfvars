@@ -1,0 +1,6 @@
+// Rename this file to `terraform.tfvars` after inputting details for your
+// cluster
+
+letsencrypt_email = "foo@example.com"
+ssd_node_ip = "x.x.x.x"
+ssd_node_mount_path = "/mnt/openebs-ssd"

@@ -1,4 +1,4 @@
 .terraform
 *.log
-
 credentials-velero
+*.tfvars
