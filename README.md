@@ -97,3 +97,14 @@ talk to my cluster from anywhere. Obviously, this allows you to connect to the
 cluster as the admin user, and it's best to use the principle of least
 privilege always. Consider creating depermissioned users for collaborators or
 CI/CD as needed.
+
+## The Rest of the Owl
+
+Now that your cluster is up and you can talk to it with kubectl, you can use
+terraform to install the rest of the stuff:
+
+- nginx ingress
+- cert manager w/cluster issuer (make sure to change the email address!)
+- prometheus/grafana, and kibana/elastic search
+
+Just run `terraform apply`.
