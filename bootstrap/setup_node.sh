@@ -2,8 +2,6 @@
 
 set -eux
 
-CLUSTER_PUBLIC_IP=71.251.203.182
-
 # This script presumes that the machine's /etc/hosts file has been configured,
 # since my homelab network does not have DNS.
 #

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -eux
+
+CLUSTER_PUBLIC_IP=71.251.203.182
+
 ### Initialize the node & join the cluster
 #
 # Note: you can run `kubeadm reset`, and then just run from here down to
