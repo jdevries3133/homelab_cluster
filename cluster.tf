@@ -87,6 +87,8 @@ variable "letsencrypt_email" {
   type = string
 }
 
+// Affected by https://github.com/hashicorp/terraform-provider-kubernetes/issues/1367
+// I just comment this guy out, then re-run tf apply; kind of gross but w/e
 resource "kubernetes_manifest" "cluster_issuer" {
   manifest = {
     apiVersion = "cert-manager.io/v1"
@@ -121,23 +123,36 @@ resource "kubernetes_namespace" "openebs" {
   }
 }
 
-variable "ssd_node_mount_path" {
-  description = "Mount path of a SSD for persistent storage"
-  type        = string
-}
-
-variable "ssd_node_hostname" {
-  description = "Hostname of the node with a SSD for persistent storage"
-  type        = string
-}
-
-
 resource "helm_release" "openebs" {
   name       = "openebs"
   namespace  = kubernetes_namespace.openebs.metadata.0.name
   repository = "https://openebs.github.io/charts"
   chart      = "openebs"
   version    = "3.6.0"
-
-  values = [ file("./openebs_values.yml") ]
 }
+
+resource "kubernetes_storage_class" "dweedledee_ssd" {
+  metadata {
+    name = "ssd"
+    annotations = {
+      "cas.openebs.io/config" = jsonencode([
+        {
+          name  = "StorageType"
+          value = "hostpath"
+        },
+        {
+          name  = "BasePath"
+          value = "/mnt/openebs-ssd"
+        }
+      ])
+      "meta.helm.sh/release-name"      = "openebs"
+      "meta.helm.sh/release-namespace" = "openebs"
+      "openebs.io/cas-type"            = "local"
+    }
+  }
+
+  storage_provisioner = "openebs.io/local"
+  reclaim_policy = "Delete"
+  volume_binding_mode = "Immediate"
+}
+
