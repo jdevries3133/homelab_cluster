@@ -113,5 +113,5 @@ you'd want as a cluster administrator, including:
 I have a large 1tb SSD on a single node which is used to satisfy all
 Persistent Volume Claims (PVC) in the cluster.
 
-Terraform will prompt you for the path to this device as well as the IP address
+Terraform will prompt you for the path to this device as well as the hostname
 of the node that has this storage when you run `terraform apply`.
