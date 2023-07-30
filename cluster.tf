@@ -116,3 +116,43 @@ resource "kubernetes_manifest" "cluster_issuer" {
     }
   }
 }
+resource "kubernetes_namespace" "openebs" {
+  metadata {
+    name = "openebs"
+  }
+}
+
+resource "helm_release" "openebs" {
+  name       = "openebs"
+  repository = "https://openebs.github.io/charts"
+  chart      = "openebs"
+  version    = "3.8.0"
+  namespace  = kubernetes_namespace.openebs.metadata[0].name
+
+  set {
+    name = "localprovisioner.deviceClass.enabled"
+    value = false
+  }
+  set {
+    name = "localprovisioner.hostpathClass.enabled"
+    value = false
+  }
+}
+
+resource "kubernetes_storage_class" "local-ssd" {
+  metadata {
+    name = "local-ssd"
+    annotations = {
+      "openebs.io/cas-type"   = "local",
+      "cas.openebs.io/config" = <<-EOT
+      - name: StorageType
+        value: "hostpath"
+      - name: BasePath
+        value: "/mnt/openebs-ssd"
+      EOT
+    }
+  }
+  storage_provisioner = "openebs.io/local"
+  reclaim_policy      = "Delete"
+  volume_binding_mode = "WaitForFirstConsumer"
+}
