@@ -27,3 +27,5 @@ disabled. See ./Dockerfile.
 
 With this container image pushed to Dockerhub, I reference it in the `test.yml`,
 and I'm able to get PostgreSQL running in my K8s cluster!
+
+See https://github.com/docker-library/docs/issues/2355; the plot continues.
