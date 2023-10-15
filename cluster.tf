@@ -59,8 +59,16 @@ resource "helm_release" "nginx_ingress" {
     value = 80
   }
   set {
-    name  = "controller.service.nodePorts.http"
+    name  = "controller.service.nodePorts.https"
     value = 443
+  }
+  set {
+    name = "controller.config.ssl-redirect"
+    value = "false"
+  }
+  set {
+    name = "controller.config.force-ssl-redirect"
+    value = "false"
   }
 }
 
@@ -101,13 +109,15 @@ resource "kubernetes_manifest" "cluster_issuer" {
         email  = var.letsencrypt_email
         server = "https://acme-v02.api.letsencrypt.org/directory"
         privateKeySecretRef = {
-          name = "issuer-account-key"
+          // I am pretty sure the API key is what ends up being stored in
+          // this secret, but I could be wrong.
+          name = "letsencrypt-prod-api-key"
         }
         solvers = [
           {
             http01 = {
               ingress = {
-                class = "public"
+                class = "nginx"
               }
             }
           }
@@ -130,11 +140,11 @@ resource "helm_release" "openebs" {
   namespace  = kubernetes_namespace.openebs.metadata[0].name
 
   set {
-    name = "localprovisioner.deviceClass.enabled"
+    name  = "localprovisioner.deviceClass.enabled"
     value = false
   }
   set {
-    name = "localprovisioner.hostpathClass.enabled"
+    name  = "localprovisioner.hostpathClass.enabled"
     value = false
   }
 }
