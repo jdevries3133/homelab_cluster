@@ -63,12 +63,8 @@ resource "helm_release" "nginx_ingress" {
     value = 443
   }
   set {
-    name = "controller.config.ssl-redirect"
-    value = "false"
-  }
-  set {
-    name = "controller.config.force-ssl-redirect"
-    value = "false"
+    name = "controller.config.no-tls-redirect-locations"
+    value = "/.well-known/acme-challenge/*"
   }
 }
 
