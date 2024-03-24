@@ -22,5 +22,4 @@ for item in data['items']:
 for api, users in api_users.items():
     print(f'=== {api} ===')
     print(', '.join(users))
-    print('=' * (len(api) + 8))
-    print('\n')
+    print('=' * (len(api) + 8), '\n')
