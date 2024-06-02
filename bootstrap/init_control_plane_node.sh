@@ -2,7 +2,9 @@
 
 set -eux
 
-CLUSTER_PUBLIC_IP=71.251.203.182
+CLUSTER_PUBLIC_IP="$(curl checkip.amazonaws.com)"
+
+echo "Adding Subject Alternative Name (SAN) $CLUSTER_PUBLIC_IP to the API server certs"
 
 ### Initialize the node & join the cluster
 #
