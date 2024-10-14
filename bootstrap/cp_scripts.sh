@@ -4,7 +4,7 @@ set -eux
 
 # Copy these scripts from here to my machines 
 
-for node in big-boi nick dweedledum
+for node in big-boi dweedledum tweedledee
 do
     scp bootstrap/* $node:/home/jack
     ssh $node chmod +x *.sh

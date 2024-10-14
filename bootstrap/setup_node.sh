@@ -3,6 +3,41 @@
 set -eux
 
 KUBERNETES_VERSION='1.28.10'
+APT_REPOSITORY='deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /'
+
+RELEASE_KEY="$(cat <<EOF
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v2.0.15 (GNU/Linux)
+
+mQENBGMHoXcBCADukGOEQyleViOgtkMVa7hKifP6POCTh+98xNW4TfHK/nBJN2sm
+u4XaiUmtB9UuGt9jl8VxQg4hOMRf40coIwHsNwtSrc2R9v5Kgpvcv537QVIigVHH
+WMNvXeoZkkoDIUljvbCEDWaEhS9R5OMYKd4AaJ+f1c8OELhEcV2dAQLLyjtnEaF/
+qmREN+3Y9+5VcRZvQHeyBxCG+hdUGE740ixgnY2gSqZ/J4YeQntQ6pMUEhT6pbaE
+10q2HUierj/im0V+ZUdCh46Lk/Rdfa5ZKlqYOiA2iN1coDPIdyqKavcdfPqSraKF
+Lan2KLcZcgTxP+0+HfzKefvGEnZa11civbe9ABEBAAG0PmlzdjprdWJlcm5ldGVz
+IE9CUyBQcm9qZWN0IDxpc3Y6a3ViZXJuZXRlc0BidWlsZC5vcGVuc3VzZS5vcmc+
+iQE+BBMBCAAoBQJjB6F3AhsDBQkEHrAABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIX
+gAAKCRAjRlTamilkNhnRCADud9iv+2CUtJGyZhhdzzd55wRKvHGmSY4eIAEKChmf
+1+BHwFnzBzbdNtnglY2xSATqKIWikzXI1stAwi8qR0dK32CS+ofMS6OUklm26Yd1
+jBWFg4LCCh8S21GLcuudHtW9QNCCjlByS4gyEJ+eYTOo2dWp88NWEzVXIKRtfLHV
+myHJnt2QLmWOeYTgmCzpeT8onl2Lp19bryRGla+Ms0AmlCltPn8j+hPeADDtR2bv
+7cTLDi/nA46u3SLV1P6yjC1ejOOswtgxppTxvLgYniS22aSnoqm47l111zZiZKJ5
+bCm1Th6qJFJwOrGEOu3aV1iKaQmN2k4G2DixsHFAU3ZeiQIcBBMBAgAGBQJjB6F3
+AAoJEM8Lkoze1k873TQP/0t2F/jltLRQMG7VCLw7+ps5JCW5FIqu/S2i9gSdNA0E
+42u+LyxjG3YxmVoVRMsxeu4kErxr8bLcA4p71W/nKeqwF9VLuXKirsBC7z2syFiL
+Ndl0ARnC3ENwuMVlSCwJO0MM5NiJuLOqOGYyD1XzSfnCzkXN0JGA/bfPRS5mPfoW
+0OHIRZFhqE7ED6wyWpHIKT8rXkESFwszUwW/D7o1HagX7+duLt8WkrohGbxTJ215
+YanOKSqyKd+6YGzDNUoGuMNPZJ5wTrThOkTzEFZ4HjmQ16w5xmcUISnCZd4nhsbS
+qN/UyV9Vu3lnkautS15E4CcjP1RRzSkT0jka62vPtAzw+PiGryM1F7svuRaEnJD5
+GXzj9RCUaR6vtFVvqqo4fvbA99k4XXj+dFAXW0TRZ/g2QMePW9cdWielcr+vHF4Z
+2EnsAmdvF7r5e2JCOU3N8OUodebU6ws4VgRVG9gptQgfMR0vciBbNDG2Xuk1WDk1
+qtscbfm5FVL36o7dkjA0x+TYCtqZIr4x3mmfAYFUqzxpfyXbSHqUJR2CoWxlyz72
+XnJ7UEo/0UbgzGzscxLPDyJHMM5Dn/Ni9FVTVKlALHnFOYYSTluoYACF1DMt7NJ3
+oyA0MELL0JQzEinixqxpZ1taOmVR/8pQVrqstqwqsp3RABaeZ80JbigUC29zJUVf
+=F4EX
+-----END PGP PUBLIC KEY BLOCK-----
+EOF
+)"
 
 # This script presumes that the machine's /etc/hosts file has been configured,
 # since my homelab network does not have DNS.
@@ -17,10 +52,14 @@ KUBERNETES_VERSION='1.28.10'
 
 ### Setup K8S CLIs
 
-apt-get update
+echo "$RELEASE_KEY" \
+    | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "$APT_REPOSITORY" > /etc/apt/sources.list.d/kubernetes.list
+apt-get update -y
 apt-get install -y apt-transport-https ca-certificates curl
 curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
+
 apt-get update -y
 apt-mark unhold kubelet kubectl
 apt-get update -y
