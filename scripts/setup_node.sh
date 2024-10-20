@@ -63,7 +63,10 @@ curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cl
 apt-get update -y
 apt-mark unhold kubelet kubectl
 apt-get update -y
-apt-get install -y kubelet="${KUBERNETES_VERSION}-*" kubectl="${KUBERNETES_VERSION}-*"
+apt-get install -y \
+    kubelet="${KUBERNETES_VERSION}-*" \
+    kubectl="${KUBERNETES_VERSION}-*" \
+    kubeadm="${KUBERNETES_VERSION}-*"
 apt-mark hold kubelet kubectl
 
 
@@ -96,3 +99,7 @@ echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.conf
 modprobe br_netfilter
 sysctl -p /etc/sysctl.conf
 echo 1 > /proc/sys/net/ipv4/ip_forward
+
+cp /etc/fstab fstab.bak
+sed -i '/swap/d' /etc/fstab
+swapoff -a

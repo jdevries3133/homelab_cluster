@@ -13,6 +13,7 @@ echo "Adding Subject Alternative Name (SAN) $CLUSTER_PUBLIC_IP to the API server
 
 kubeadm init \
     --control-plane-endpoint=big-boi \
+    --upload-certs \
     --pod-network-cidr=10.0.0.0/24 \
     --service-cidr=10.0.1.0/24 \
     --apiserver-cert-extra-sans=$CLUSTER_PUBLIC_IP

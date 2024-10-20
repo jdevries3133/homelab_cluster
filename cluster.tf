@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "my-sites-terraform-remote-state"
-    key    = "cluster-2"
+    key    = "cluster-3"
     region = "us-east-2"
   }
   required_providers {
@@ -35,36 +35,39 @@ resource "kubernetes_namespace" "nginx_ingress" {
 resource "helm_release" "nginx_ingress" {
   name       = "nginx-ingress"
   namespace  = kubernetes_namespace.nginx_ingress.metadata.0.name
-  repository = "https://helm.nginx.com/stable"
-  chart      = "nginx-ingress"
-  version    = "0.16.0"
-
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  version    = "4.11.3"
+  set {
+    name = "controller.service.type"
+    value = "NodePort"
+  }
+  set {
+    name = "controller.dnsPolicy"
+    value = "ClusterFirstWithHostNet"
+  }
   set {
     // Using a DaemonSet ensures at least 1 runs per node, which means that any
     // worker node becomes a valid ingress recipient, which just makes life
     // simpler
     name  = "controller.kind"
-    value = "daemonset"
+    value = "DaemonSet"
   }
   set {
-    // This is typical for kubeadm clusters. The typical "LoadBalancer" type
-    // is going to integrate with cloud providers. For an on-prem homelab
-    // setup, we want the ingress to listen on ports on the node they are
-    // running on
-    name  = "controller.service.type"
-    value = "NodePort"
+    name = "controller.hostNetwork"
+    value = true
+  }
+  // set {
+  //   name = "controller.hostPort.enabled"
+  //   value = true
+  // }
+  set {
+    name = "controller.publishService.enabled"
+    value = false
   }
   set {
-    name  = "controller.service.nodePorts.http"
-    value = 80
-  }
-  set {
-    name  = "controller.service.nodePorts.https"
-    value = 443
-  }
-  set {
-    name = "controller.config.no-tls-redirect-locations"
-    value = "/.well-known/acme-challenge/*"
+    name = "controller.reportNodeInternalIp"
+    value = true
   }
 }
 
