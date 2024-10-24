@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "my-sites-terraform-remote-state"
-    key    = "cluster-3"
+    key    = "cluster-4"
     region = "us-east-2"
   }
   required_providers {
