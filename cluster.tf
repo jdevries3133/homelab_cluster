@@ -133,9 +133,9 @@ resource "kubernetes_namespace" "openebs" {
 
 resource "helm_release" "openebs" {
   name       = "openebs"
-  repository = "https://openebs.github.io/charts"
+  repository = "https://openebs.github.io/openebs"
   chart      = "openebs"
-  version    = "3.8.0"
+  version    = "4.1.2"
   namespace  = kubernetes_namespace.openebs.metadata[0].name
 
   set {
@@ -145,6 +145,14 @@ resource "helm_release" "openebs" {
   set {
     name  = "localprovisioner.hostpathClass.enabled"
     value = false
+  }
+  set {
+    name = "mayastor.csi.node.kubeletDir"
+    value = "/var/lib/kubelet"
+  }
+  set {
+    name = "engines.replicated.mayastor.enabled"
+    value = true
   }
 }
 
