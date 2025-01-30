@@ -16,7 +16,7 @@ set -o pipefail
 
 print_welcome_page
 
-echo "fork is good"
+echo "fork is great"
 
 if [[ "$1" = "/opt/bitnami/scripts/etcd/run.sh" ]]; then
     info "** Starting etcd setup **"

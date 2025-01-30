@@ -425,6 +425,7 @@ setup_etcd_active_endpoints() {
         ETCD_ACTIVE_ENDPOINTS=$(echo "${active_endpoints_array[*]}" | tr ' ' ',')
         export ETCD_ACTIVE_ENDPOINTS
     fi
+    debug 'leaving setup_etcd_active_endpoints'
     echo "${active_endpoints} ${cluster_size} ${ETCD_ACTIVE_ENDPOINTS}"
 }
 
@@ -440,11 +441,14 @@ setup_etcd_active_endpoints() {
 is_healthy_etcd_cluster() {
     local return_value=0
     local active_endpoints cluster_size
+    debug 'calling setup_etcd_active_endpoints'
     read -r active_endpoints cluster_size ETCD_ACTIVE_ENDPOINTS <<<"$(setup_etcd_active_endpoints)"
     export ETCD_ACTIVE_ENDPOINTS
+    debug "TOP active_endpoints = $active_endpoints; cluster_size = $cluster_size"
 
     if is_boolean_yes "$ETCD_DISASTER_RECOVERY"; then
         if [[ -f "/snapshots/.disaster_recovery" ]]; then
+            debug 'disaster recovery'
             # Remove current node from the ones that need to recover
             remove_in_file "/snapshots/.disaster_recovery" "$host:$port"
             # Remove nodes that do not exist anymore from the ones that need to recover

@@ -1,0 +1,75 @@
+fork is great
+etcd 02:26:30.63 INFO  ==> ** Starting etcd setup **
+etcd 02:26:30.64 INFO  ==> Validating settings in ETCD_* env vars..
+etcd 02:26:30.64 WARN  ==> You set the environment variable ALLOW_NONE_AUTHENTICATION=yes. For safety reasons, do not use this flag in a production environment.
+etcd 02:26:30.65 INFO  ==> Initializing etcd
+etcd 02:26:30.65 INFO  ==> Generating etcd config file using env variables
+etcd 02:26:30.66 INFO  ==> There is no data from previous deployments
+etcd 02:26:30.66 INFO  ==> Adding new member to existing cluster
+etcd 02:26:30.66 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:26:35.70 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:26:35.70 DEBUG ==> TOP active_endpoints = 0; cluster_size = 1
+etcd 02:26:35.70 DEBUG ==> path 2
+etcd 02:26:35.71 DEBUG ==> active_endpoints = 0; cluster_size = 1
+etcd 02:26:35.71 DEBUG ==> There are no enough active endpoints!
+etcd 02:26:35.71 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+etcd 02:26:42.17 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:26:42.21 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:26:42.21 DEBUG ==> TOP active_endpoints = 0; cluster_size = 1
+etcd 02:26:42.21 DEBUG ==> path 2
+etcd 02:26:42.21 DEBUG ==> active_endpoints = 0; cluster_size = 1
+etcd 02:26:42.22 DEBUG ==> There are no enough active endpoints!
+etcd 02:26:42.22 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+etcd 02:26:45.71 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:26:46.90 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:26:50.76 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:26:50.76 DEBUG ==> TOP active_endpoints = 0; cluster_size = 1
+etcd 02:26:50.77 DEBUG ==> path 2
+etcd 02:26:50.77 DEBUG ==> active_endpoints = 0; cluster_size = 1
+etcd 02:26:50.77 DEBUG ==> There are no enough active endpoints!
+etcd 02:26:50.77 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+etcd 02:26:51.97 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:26:51.98 DEBUG ==> TOP active_endpoints = 0; cluster_size = 1
+etcd 02:26:51.99 DEBUG ==> path 2
+etcd 02:26:51.99 DEBUG ==> active_endpoints = 0; cluster_size = 1
+etcd 02:26:52.00 DEBUG ==> There are no enough active endpoints!
+etcd 02:26:52.00 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+etcd 02:26:52.22 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:27:00.78 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:27:02.01 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:27:02.30 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:27:02.30 DEBUG ==> TOP active_endpoints = 0; cluster_size = 3
+etcd 02:27:02.31 DEBUG ==> path 2
+etcd 02:27:02.31 DEBUG ==> active_endpoints = 0; cluster_size = 3
+etcd 02:27:02.31 DEBUG ==> There are no enough active endpoints!
+etcd 02:27:02.31 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+etcd 02:27:10.85 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:27:10.85 DEBUG ==> TOP active_endpoints = 0; cluster_size = 3
+etcd 02:27:10.85 DEBUG ==> path 2
+etcd 02:27:10.85 DEBUG ==> active_endpoints = 0; cluster_size = 3
+etcd 02:27:10.86 DEBUG ==> There are no enough active endpoints!
+etcd 02:27:10.86 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+etcd 02:27:12.20 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:27:12.20 DEBUG ==> TOP active_endpoints = 0; cluster_size = 3
+etcd 02:27:12.21 DEBUG ==> path 2
+etcd 02:27:12.21 DEBUG ==> active_endpoints = 0; cluster_size = 3
+etcd 02:27:12.21 DEBUG ==> There are no enough active endpoints!
+etcd 02:27:12.22 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+etcd 02:27:12.32 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:27:20.86 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:27:22.22 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:27:22.39 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:27:22.40 DEBUG ==> TOP active_endpoints = 0; cluster_size = 3
+etcd 02:27:22.40 DEBUG ==> path 2
+etcd 02:27:22.40 DEBUG ==> active_endpoints = 0; cluster_size = 3
+etcd 02:27:22.40 DEBUG ==> There are no enough active endpoints!
+etcd 02:27:22.41 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+etcd 02:27:32.41 DEBUG ==> calling setup_etcd_active_endpoints
+etcd 02:27:32.39 DEBUG ==> leaving setup_etcd_active_endpoints
+etcd 02:27:32.40 DEBUG ==> TOP active_endpoints = 0; cluster_size = 3
+etcd 02:27:32.40 DEBUG ==> path 2
+etcd 02:27:32.41 DEBUG ==> active_endpoints = 0; cluster_size = 3
+etcd 02:27:32.41 DEBUG ==> There are no enough active endpoints!
+etcd 02:27:32.42 WARN  ==> Cluster not healthy, not adding self to cluster for now, keeping trying...
+
+
