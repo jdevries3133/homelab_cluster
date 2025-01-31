@@ -153,6 +153,6 @@ So, the next steps are;
 3. DONE unmount `/dev/sdb` on `nick`, `dweedledee`
 4. create myastor replicated cluster
    (https://openebs.io/docs/user-guides/replicated-storage-user-guide/replicated-pv-mayastor/rs-installation#diskpool-requirements)
-   1. `nick /dev/sdb`
-   2. `nick /dev/sdc` (new drive)
-   3. `dweedledee /dev/sdb`
+   1. `nick` `/devices/pci0000:00/0000:00:17.0/ata1/host0/target0:0:0/0:0:0:0/block/sda`
+   2. `nick` `/devices/pci0000:00/0000:00:17.0/ata5/host4/target4:0:0/4:0:0:0/block/sdc`
+   3. `dweedledee` `/devices/pci0000:00/0000:00:1f.2/ata2/host1/target1:0:0/1:0:0:0/block/sdb`

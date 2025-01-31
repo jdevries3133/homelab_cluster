@@ -173,3 +173,81 @@ resource "kubernetes_storage_class" "local-ssd" {
   reclaim_policy      = "Delete"
   volume_binding_mode = "WaitForFirstConsumer"
 }
+
+resource "kubernetes_storage_class" "sql_db" {
+  metadata {
+    name = "sql-db"
+  }
+  parameters = {
+    protocol = "nvmf"
+    repl = "3"
+    fsType = "xfs"
+  }
+  storage_provisioner = "io.openebs.csi-mayastor"
+  reclaim_policy = "Delete"
+  volume_binding_mode = "WaitForFirstConsumer"
+  allow_volume_expansion = true
+}
+
+resource "kubernetes_manifest" "nick_sda_disk" {
+  manifest = {
+    apiVersion = "openebs.io/v1beta2"
+    kind = "DiskPool"
+    metadata = {
+      name = "nick-sda"
+      namespace = kubernetes_namespace.openebs.metadata[0].name
+    }
+    spec = {
+      node = "nick"
+      // > Note that whilst the "disks" parameter accepts an array of values,
+      // > the current version of Replicated PV Mayastor supports only one disk
+      // > device per pool.
+      //
+      // https://openebs.io/docs/user-guides/replicated-storage-user-guide/replicated-pv-mayastor/rs-configuration#configure-pools
+
+      disks = [
+        "/dev/disk/by-id/ata-KINGSTON_SA400S37480G_50026B77856FCED7",
+      ]
+    }
+  }
+}
+
+resource "kubernetes_manifest" "nick_sdc_disk" {
+  manifest = {
+    apiVersion = "openebs.io/v1beta2"
+    kind = "DiskPool"
+    metadata = {
+      name = "nick-sdc"
+      namespace = kubernetes_namespace.openebs.metadata[0].name
+    }
+    spec = {
+      node = "nick"
+      // > Note that whilst the "disks" parameter accepts an array of values,
+      // > the current version of Replicated PV Mayastor supports only one disk
+      // > device per pool.
+      //
+      // https://openebs.io/docs/user-guides/replicated-storage-user-guide/replicated-pv-mayastor/rs-configuration#configure-pools
+
+      disks = [
+        "/dev/disk/by-id/ata-Samsung_SSD_860_EVO_1TB_S4CRNG0M107732M"
+      ]
+    }
+  }
+}
+
+resource "kubernetes_manifest" "dweedledee_disk_pool" {
+  manifest = {
+    apiVersion = "openebs.io/v1beta2"
+    kind = "DiskPool"
+    metadata = {
+      name = "dweedledee-sdb"
+      namespace = kubernetes_namespace.openebs.metadata[0].name
+    }
+    spec = {
+      node = "dweedledee"
+      disks = [
+        "/dev/disk/by-id/ata-KINGSTON_SA400S37480G_50026B7785076D69"
+      ]
+    }
+  }
+}
