@@ -156,31 +156,13 @@ resource "helm_release" "openebs" {
   }
 }
 
-resource "kubernetes_storage_class" "local-ssd" {
-  metadata {
-    name = "local-ssd"
-    annotations = {
-      "openebs.io/cas-type"   = "local",
-      "cas.openebs.io/config" = <<-EOT
-      - name: StorageType
-        value: "hostpath"
-      - name: BasePath
-        value: "/mnt/openebs-ssd"
-      EOT
-    }
-  }
-  storage_provisioner = "openebs.io/local"
-  reclaim_policy      = "Delete"
-  volume_binding_mode = "WaitForFirstConsumer"
-}
-
 resource "kubernetes_storage_class" "sql_db" {
   metadata {
     name = "sql-db"
   }
   parameters = {
     protocol = "nvmf"
-    repl = "3"
+    repl = "2"
     fsType = "xfs"
   }
   storage_provisioner = "io.openebs.csi-mayastor"
