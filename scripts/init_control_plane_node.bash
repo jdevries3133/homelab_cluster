@@ -2,10 +2,6 @@
 
 set -eux
 
-CLUSTER_PUBLIC_IP="$(curl checkip.amazonaws.com)"
-
-echo "Adding Subject Alternative Name (SAN) $CLUSTER_PUBLIC_IP to the API server certs"
-
 ### Initialize the node & join the cluster
 #
 # Note: you can run `kubeadm reset`, and then just run from here down to
@@ -16,7 +12,7 @@ kubeadm init \
     --upload-certs \
     --pod-network-cidr=10.0.0.0/24 \
     --service-cidr=10.0.1.0/24 \
-    --apiserver-cert-extra-sans=$CLUSTER_PUBLIC_IP
+    --apiserver-cert-extra-sans=cluster.jackdevries.com
 
 # Install calico operator & CRDs
 KUBECONFIG=/etc/kubernetes/admin.conf \
