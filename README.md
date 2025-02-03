@@ -45,7 +45,7 @@ single argument to `ssh` or `scp`, and it will work; YMMV.
 There are two "setup" scripts:
 
 - `./bootstrap/setup_node.sh` (all nodes)
-- `./bootstrap/init_control_plane_node.sh` (control-plane node only)
+- `./bootstrap/init_control_plane_node.bash` (control-plane node only)
 
 The first script must be ran on every node. It installs the container runtime
 and container networking interface (CNI).
@@ -58,7 +58,7 @@ control-plane node which is perfectly adequate for homelab use-cases.
 > ⚠️ Change the `PUBLIC_IP_ADDRESS` in the `setup_node.sh` script to your own
 > public IP! ⚠️
 
-To do this, run the `./bootstrap/init_control_plane_node.sh`
+To do this, run the `./bootstrap/init_control_plane_node.bash`
 
 Keep your eyes peeled -- the output of this script will include important
 details for next steps:
