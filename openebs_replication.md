@@ -151,7 +151,7 @@ So, the next steps are;
 1. DONE move all host-mount DBs to `big-boi` or `tweedledee` `/mnt/openebs-ssd`
 2. DONE take my extra drive, and insert it into `nick`.
 3. DONE unmount `/dev/sdb` on `nick`, `dweedledee`
-4. create myastor replicated cluster
+4. DONE create myastor replicated cluster
    (https://openebs.io/docs/user-guides/replicated-storage-user-guide/replicated-pv-mayastor/rs-installation#diskpool-requirements)
    1. `nick` `/devices/pci0000:00/0000:00:17.0/ata1/host0/target0:0:0/0:0:0:0/block/sda`
    2. `nick` `/devices/pci0000:00/0000:00:17.0/ata5/host4/target4:0:0/4:0:0:0/block/sdc`
