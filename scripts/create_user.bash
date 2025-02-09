@@ -2,7 +2,7 @@
 
 set -eux
 
-# Create an admin user
+# Create a user. The created user does not have any (cluster)roles!
 
 USERNAME="$1"
 
