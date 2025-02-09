@@ -98,3 +98,9 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 cp /etc/fstab fstab.bak
 sed -i '/swap/d' /etc/fstab
 swapoff -a
+
+for module in nvme_tcp nvmet nvmet_tcp
+do
+    modprobe $module
+    echo "$module" >> /etc/modules-load.d/modules.conf
+done
