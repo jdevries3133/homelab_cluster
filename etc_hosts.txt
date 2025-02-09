@@ -1,4 +1,4 @@
 192.168.1.10 big-boi
-192.168.1.18 dweedledee
+192.168.1.18 dweedledum
 192.168.1.19 tweedledee
 192.168.1.9 nick

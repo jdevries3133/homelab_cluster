@@ -103,7 +103,7 @@ sda      8:0    0 447.1G  0 disk
 ├─sda2   8:2    0    30G  0 part /var/lib/kubelet/pods/148dbd8e-b898-4d9d-b9cd-b61dd9236317/volume-subpaths/config/openebs-ndm/0
 │                                /
 └─sda3   8:3    0 417.1G  0 part /mnt/openebs-ssd
-=== dweedledee
+=== dweedledum
 NAME                      MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
 loop0                       7:0    0  55.4M  1 loop /snap/core18/2846
 loop1                       7:1    0  89.4M  1 loop /snap/lxd/31333
@@ -126,7 +126,7 @@ sdb                         8:16   0 447.1G  0 disk
 I think that shrinking all current persistence into a single place is a good
 place to start. I want to free up;
 
-1. dweedledee `/dev/sdb`
+1. dweedledum `/dev/sdb`
 2. nick `/dev/sdb`
 3. nick drive ++
 
@@ -137,22 +137,22 @@ Obviously, this makes `nick` more of a hotspot as a source of failure, but
 that's OK.
 
 Longer term, I can probably scale the cluster down such that `nick`,
-`dweedledee`, and one other node (for `etcd` quorum only) are present in the
+`dweedledum`, and one other node (for `etcd` quorum only) are present in the
 cluster. At that point, it frees one node to do upgrades / changes, which can
 include adding OpenEBS disks, and then I ultimately end up in a state where ship
 of theseus can begin.
 
 Additionally, I think we'll move all host-path volumes onto the OS file-system
-of `big-boi`, which frees up `/dev/sdb` on `nick` and `dweedledee` (currently
+of `big-boi`, which frees up `/dev/sdb` on `nick` and `dweedledum` (currently
 used for `/mnt/openebs-ssd`.
 
 So, the next steps are;
 
 1. DONE move all host-mount DBs to `big-boi` or `tweedledee` `/mnt/openebs-ssd`
 2. DONE take my extra drive, and insert it into `nick`.
-3. DONE unmount `/dev/sdb` on `nick`, `dweedledee`
+3. DONE unmount `/dev/sdb` on `nick`, `dweedledum`
 4. DONE create myastor replicated cluster
    (https://openebs.io/docs/user-guides/replicated-storage-user-guide/replicated-pv-mayastor/rs-installation#diskpool-requirements)
    1. `nick` `/devices/pci0000:00/0000:00:17.0/ata1/host0/target0:0:0/0:0:0:0/block/sda`
    2. `nick` `/devices/pci0000:00/0000:00:17.0/ata5/host4/target4:0:0/4:0:0:0/block/sdc`
-   3. `dweedledee` `/devices/pci0000:00/0000:00:1f.2/ata2/host1/target1:0:0/1:0:0:0/block/sdb`
+   3. `dweedledum` `/devices/pci0000:00/0000:00:1f.2/ata2/host1/target1:0:0/1:0:0:0/block/sdb`

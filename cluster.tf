@@ -217,16 +217,16 @@ resource "kubernetes_manifest" "nick_sdc_disk" {
   }
 }
 
-resource "kubernetes_manifest" "dweedledee_disk_pool" {
+resource "kubernetes_manifest" "dweedledum_disk_pool" {
   manifest = {
     apiVersion = "openebs.io/v1beta2"
     kind = "DiskPool"
     metadata = {
-      name = "dweedledee-sdb"
+      name = "dweedledum-sdb"
       namespace = kubernetes_namespace.openebs.metadata[0].name
     }
     spec = {
-      node = "dweedledee"
+      node = "dweedledum"
       disks = [
         "/dev/disk/by-id/ata-KINGSTON_SA400S37480G_50026B7785076D69"
       ]
