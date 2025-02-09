@@ -1,0 +1,11 @@
+#cloud-config
+
+users:
+  - name: jack
+    groups: sudo
+    ssh-authorized-keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDDAMyzWW3EUVFroz3K4neqgGDlQQbk/a4fIm29Ysbn3 johndevries@Jacks-MacBook-Pro.local
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    shell: /bin/bash
+
+ssh_pwauth: no
