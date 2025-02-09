@@ -252,3 +252,38 @@ resource "kubernetes_manifest" "big_boi_disk_pool" {
   }
 }
 
+resource "kubernetes_cluster_role_binding" "jack_admin" {
+  metadata {
+    name = "jack-admin"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind = "ClusterRole"
+    name = "cluster-admin"
+  }
+  subject {
+    api_group = "rbac.authorization.k8s.io"
+    kind = "User"
+    name = "jack"
+  }
+}
+
+// I haven't figured out the right scoped permissions, so for now I just
+// uncomment this to escalate GitHub into god-mode whenver I want deployments
+// to work, and I'll figure out how to scope it down later.
+// resource "kubernetes_cluster_role_binding" "github_admin" {
+//   metadata {
+//     name = "github-admin"
+//   }
+//   role_ref {
+//     api_group = "rbac.authorization.k8s.io"
+//     kind = "ClusterRole"
+//     name = "admin"
+//   }
+//   subject {
+//     api_group = "rbac.authorization.k8s.io"
+//     kind = "User"
+//     name = "github"
+//     namespace = "beancount"
+//   }
+// }
