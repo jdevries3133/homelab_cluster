@@ -2,12 +2,16 @@
 
 set -eux
 
-KUBERNETES_VERSION='1.28.10'
-APT_REPOSITORY='deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /'
+CNI_PLUGIN_VERSION='1.6.2'
+CONTAINERD_VERSION='1.7.25'
+KUBERNETES_VERSION='1.32'
+RUNC_VERSION='1.2.4'
+
+APT_REPOSITORY="deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_VERSION}/deb/ /"
 
 RELEASE_KEY="$(cat <<EOF
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v2.0.15 (GNU/Linux)
+Version: GnuPG v1.4.5 (GNU/Linux)
 
 mQENBGMHoXcBCADukGOEQyleViOgtkMVa7hKifP6POCTh+98xNW4TfHK/nBJN2sm
 u4XaiUmtB9UuGt9jl8VxQg4hOMRf40coIwHsNwtSrc2R9v5Kgpvcv537QVIigVHH
@@ -16,13 +20,13 @@ qmREN+3Y9+5VcRZvQHeyBxCG+hdUGE740ixgnY2gSqZ/J4YeQntQ6pMUEhT6pbaE
 10q2HUierj/im0V+ZUdCh46Lk/Rdfa5ZKlqYOiA2iN1coDPIdyqKavcdfPqSraKF
 Lan2KLcZcgTxP+0+HfzKefvGEnZa11civbe9ABEBAAG0PmlzdjprdWJlcm5ldGVz
 IE9CUyBQcm9qZWN0IDxpc3Y6a3ViZXJuZXRlc0BidWlsZC5vcGVuc3VzZS5vcmc+
-iQE+BBMBCAAoBQJjB6F3AhsDBQkEHrAABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIX
-gAAKCRAjRlTamilkNhnRCADud9iv+2CUtJGyZhhdzzd55wRKvHGmSY4eIAEKChmf
-1+BHwFnzBzbdNtnglY2xSATqKIWikzXI1stAwi8qR0dK32CS+ofMS6OUklm26Yd1
-jBWFg4LCCh8S21GLcuudHtW9QNCCjlByS4gyEJ+eYTOo2dWp88NWEzVXIKRtfLHV
-myHJnt2QLmWOeYTgmCzpeT8onl2Lp19bryRGla+Ms0AmlCltPn8j+hPeADDtR2bv
-7cTLDi/nA46u3SLV1P6yjC1ejOOswtgxppTxvLgYniS22aSnoqm47l111zZiZKJ5
-bCm1Th6qJFJwOrGEOu3aV1iKaQmN2k4G2DixsHFAU3ZeiQIcBBMBAgAGBQJjB6F3
+iQE+BBMBCAAoBQJnFF34AhsDBQkIK2yBBgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIX
+gAAKCRAjRlTamilkNtOACACDK9dQ8CH2Ji9C3Q926nVMUiXdyJK1onCBrQSEBqdR
+LJaT6hGx5pzxkQGgUDpS9p7LA0u920HKLwGb7yIAWtyE5TAj2CYprGgpq98sfsGC
++U5T9IrAdya/BaTAkkP6gNhfMjNaK3bOWsvuLRlluKMNch4ify+IwLqc1JLG40bj
+2HnKBGYkC3m0VtQfUuPQMImSLta/NwRHJMPo8jfGyManqMMxp35/ecP2rXMfb/l1
+WjFDY7h+6nqXay20ljMXkN23W8wFTdvC6lq45wwM5IBnKNR/TjNNYAIizZoHFWz1
+c/ecMWWWCB2S7WbY4xI3JSCOD4XIff3ie7pc68/kgPytiQIcBBMBAgAGBQJjB6F3
 AAoJEM8Lkoze1k873TQP/0t2F/jltLRQMG7VCLw7+ps5JCW5FIqu/S2i9gSdNA0E
 42u+LyxjG3YxmVoVRMsxeu4kErxr8bLcA4p71W/nKeqwF9VLuXKirsBC7z2syFiL
 Ndl0ARnC3ENwuMVlSCwJO0MM5NiJuLOqOGYyD1XzSfnCzkXN0JGA/bfPRS5mPfoW
@@ -34,7 +38,7 @@ GXzj9RCUaR6vtFVvqqo4fvbA99k4XXj+dFAXW0TRZ/g2QMePW9cdWielcr+vHF4Z
 qtscbfm5FVL36o7dkjA0x+TYCtqZIr4x3mmfAYFUqzxpfyXbSHqUJR2CoWxlyz72
 XnJ7UEo/0UbgzGzscxLPDyJHMM5Dn/Ni9FVTVKlALHnFOYYSTluoYACF1DMt7NJ3
 oyA0MELL0JQzEinixqxpZ1taOmVR/8pQVrqstqwqsp3RABaeZ80JbigUC29zJUVf
-=F4EX
+=Eplj
 -----END PGP PUBLIC KEY BLOCK-----
 EOF
 )"
@@ -58,34 +62,25 @@ sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo "$APT_REPOSITORY" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update -y
 apt-get install -y apt-transport-https ca-certificates curl
-curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
 apt-get update -y
 apt-mark unhold kubelet kubectl
 apt-get update -y
-apt-get install -y \
-    kubelet="${KUBERNETES_VERSION}-*" \
-    kubectl="${KUBERNETES_VERSION}-*" \
-    kubeadm="${KUBERNETES_VERSION}-*"
+apt-get install -y kubelet kubectl kubeadm
 apt-mark hold kubelet kubectl
-
-
-### Setup containerd
-
-# From https://www.techrepublic.com/article/install-containerd-ubuntu/
 
 apt-get install -y wget
 
-wget https://github.com/containerd/containerd/releases/download/v1.6.18/containerd-1.6.18-linux-amd64.tar.gz
-tar Cxzvf /usr/local containerd-1.6.18-linux-amd64.tar.gz
+wget https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz
+tar Cxzvf /usr/local containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz
 
-wget https://github.com/opencontainers/runc/releases/download/v1.1.4/runc.amd64
+wget https://github.com/opencontainers/runc/releases/download/v${RUNC_VERSION}/runc.amd64
 install -m 755 runc.amd64 /usr/local/sbin/runc
 
-wget https://github.com/containernetworking/plugins/releases/download/v1.2.0/cni-plugins-linux-amd64-v1.2.0.tgz
+wget https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGIN_VERSION}/cni-plugins-linux-amd64-v${CNI_PLUGIN_VERSION}.tgz
 mkdir -p /opt/cni/bin
 
-tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.2.0.tgz
+tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v${CNI_PLUGIN_VERSION}.tgz
 mkdir -p /etc/containerd
 
 containerd config default | tee /etc/containerd/config.toml
