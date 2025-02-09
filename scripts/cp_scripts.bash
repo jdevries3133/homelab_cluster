@@ -7,5 +7,5 @@ set -eux
 for node in big-boi dweedledum tweedledee nick
 do
     scp scripts/* $node:
-    ssh $node chmod +x *.sh
+    ssh $node chmod +x *.bash
 done

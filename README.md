@@ -36,7 +36,7 @@ file for `big-boi`:
 
 > ⚠️ All scripts here must be run as root with `sudo`! ⚠️
 
-First `./bootstrap/cp_scripts.sh` can be used to copy the bootstrap scripts to
+First `./bootstrap/cp_scripts.bash` can be used to copy the bootstrap scripts to
 each of your nodes. Note that you may need to tweak the ssh command to work in
 the way that you normally ssh onto your machines. For example, I specify my
 username in my `~/.ssh/config` file, so I can simply pass the hostname as a
@@ -44,7 +44,7 @@ single argument to `ssh` or `scp`, and it will work; YMMV.
 
 There are two "setup" scripts:
 
-- `./bootstrap/setup_node.sh` (all nodes)
+- `./bootstrap/setup_node.bash` (all nodes)
 - `./bootstrap/init_control_plane_node.bash` (control-plane node only)
 
 The first script must be ran on every node. It installs the container runtime
@@ -55,7 +55,7 @@ and container networking interface (CNI).
 First, you will need to bootstrap your control-plane node. I run a single
 control-plane node which is perfectly adequate for homelab use-cases.
 
-> ⚠️ Change the `PUBLIC_IP_ADDRESS` in the `setup_node.sh` script to your own
+> ⚠️ Change the `PUBLIC_IP_ADDRESS` in the `setup_node.bash` script to your own
 > public IP! ⚠️
 
 To do this, run the `./bootstrap/init_control_plane_node.bash`
@@ -82,7 +82,7 @@ re-generate these join commands later.
 Now that your first node is up and running, adding additional nodes is as
 simple as:
 
-1. Running the `setup_node.sh` script on the new node
+1. Running the `setup_node.bash` script on the new node
 2. Copying and pasting the `kubeadm` command from before with the connection
    token
 

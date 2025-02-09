@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ssh $SSH_TARGET '
     set -ex
