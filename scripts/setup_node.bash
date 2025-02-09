@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Install all of the linux packages needed for a node to be a Kubernetes
+# cluster. This script has been used with Ubuntu 22 and 24. It might
+# work on any Debian-based linux distro.
+
 set -eux
 
 CNI_PLUGIN_VERSION='1.6.2'

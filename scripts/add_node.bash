@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Add this node to the cluster.
+#
+### PREREQUISITE
+#
+# Installing OS software via ./setup_node.bash should happen first.
+
 set -eux
 
 echo "This script is not finished; it's a loose set of commands that need to happen. Review the source of this script!"
