@@ -7,7 +7,7 @@ set -eux
 USERNAME="$1"
 
 # ~90 days
-EXPIRATION_SECONDS="3600"
+EXPIRATION_SECONDS="7000000"
 
 if [ -z "$USERNAME" ]
 then
