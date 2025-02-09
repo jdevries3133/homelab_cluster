@@ -125,6 +125,7 @@ resource "kubernetes_manifest" "cluster_issuer" {
     }
   }
 }
+
 resource "kubernetes_namespace" "openebs" {
   metadata {
     name = "openebs"
@@ -171,12 +172,12 @@ resource "kubernetes_storage_class" "sql_db" {
   allow_volume_expansion = true
 }
 
-resource "kubernetes_manifest" "nick_sda_disk" {
+resource "kubernetes_manifest" "nick_disk_0" {
   manifest = {
     apiVersion = "openebs.io/v1beta2"
     kind = "DiskPool"
     metadata = {
-      name = "nick-sda"
+      name = "nick-0"
       namespace = kubernetes_namespace.openebs.metadata[0].name
     }
     spec = {
@@ -194,12 +195,12 @@ resource "kubernetes_manifest" "nick_sda_disk" {
   }
 }
 
-resource "kubernetes_manifest" "nick_sdc_disk" {
+resource "kubernetes_manifest" "nick_disk_1" {
   manifest = {
     apiVersion = "openebs.io/v1beta2"
     kind = "DiskPool"
     metadata = {
-      name = "nick-sdc"
+      name = "nick-1"
       namespace = kubernetes_namespace.openebs.metadata[0].name
     }
     spec = {
@@ -211,7 +212,7 @@ resource "kubernetes_manifest" "nick_sdc_disk" {
       // https://openebs.io/docs/user-guides/replicated-storage-user-guide/replicated-pv-mayastor/rs-configuration#configure-pools
 
       disks = [
-        "/dev/disk/by-id/ata-Samsung_SSD_860_EVO_1TB_S4CRNG0M107732M"
+        "/dev/disk/by-id/scsi-SATA_KINGSTON_SA400S3_50026B7785077865"
       ]
     }
   }
@@ -233,3 +234,21 @@ resource "kubernetes_manifest" "dweedledum_disk_pool" {
     }
   }
 }
+
+resource "kubernetes_manifest" "big_boi_disk_pool" {
+  manifest = {
+    apiVersion = "openebs.io/v1beta2"
+    kind = "DiskPool"
+    metadata = {
+      name = "big-boi-sda"
+      namespace = kubernetes_namespace.openebs.metadata[0].name
+    }
+    spec = {
+      node = "big-boi"
+      disks = [
+        "/dev/disk/by-id/ata-KINGSTON_SA400S37240G_50026B7783EF49E7"
+      ]
+    }
+  }
+}
+
