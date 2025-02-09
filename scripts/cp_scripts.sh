@@ -2,10 +2,10 @@
 
 set -eux
 
-# Copy these scripts from here to my machines 
+# Copy these scripts from here to my machines
 
 for node in big-boi dweedledum tweedledee nick
 do
-    scp scripts/* $node:/home/jack
+    scp scripts/* $node:
     ssh $node chmod +x *.sh
 done
