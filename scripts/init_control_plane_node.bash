@@ -8,7 +8,7 @@ set -eux
 # reset the node without reinstalling containerd, runc, and the CNI plugin
 
 kubeadm init \
-    --control-plane-endpoint=big-boi \
+    --control-plane-endpoint=cluster.jackdevries.com \
     --upload-certs \
     --pod-network-cidr=10.0.0.0/24 \
     --service-cidr=10.0.1.0/24 \
@@ -17,12 +17,10 @@ kubeadm init \
 # Install calico operator & CRDs
 KUBECONFIG=/etc/kubernetes/admin.conf \
     kubectl create \
-    -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/tigera-operator.yaml
+    -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.2/manifests/tigera-operator.yaml
 
 # This custom-resources.yaml file needs to be present. I downloaded it from
 # https://docs.tigera.io/calico/3.25/getting-started/kubernetes/self-managed-onprem/onpremises,
 # and customized the CIDR block.
 KUBECONFIG=/etc/kubernetes/admin.conf \
     kubectl create -f custom-resources.yaml
-
-echo "Bootstrap complete; copy the kubectl config at /etc/kubernetes/admin.conf"
