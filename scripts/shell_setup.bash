@@ -10,6 +10,7 @@ ssh $SSH_TARGET '
     sed -i "s/^#force_color_prompt/force_color_prompt/g" $HOME/.bashrc
 
     echo "alias n=\"vim\"" > ~/.bash_aliases
+    echo "export EDITOR=vim" > ~/.bashrc
 '
 
 exec ssh $SSH_TARGET
