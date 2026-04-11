@@ -6,10 +6,10 @@
 
 set -eux
 
-CNI_PLUGIN_VERSION='1.6.2'
-CONTAINERD_VERSION='1.7.25'
+CNI_PLUGIN_VERSION='1.9.1'
+CONTAINERD_VERSION='2.2.2'
 KUBERNETES_VERSION='1.32'
-RUNC_VERSION='1.2.4'
+RUNC_VERSION='1.4.2'
 
 APT_REPOSITORY="deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_VERSION}/deb/ /"
 

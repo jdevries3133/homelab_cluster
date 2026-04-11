@@ -1,10 +1,10 @@
 #!/bin/bash
 
-set -eux
+set -euxo pipefail
 
 # Copy these scripts from here to my machines
 
-for node in big-boi dweedledum tweedledee nick
+for node in $(cat node_list.txt)
 do
     scp scripts/* $node:
     ssh $node chmod +x *.bash
