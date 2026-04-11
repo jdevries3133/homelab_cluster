@@ -68,10 +68,8 @@ apt-get update -y
 apt-get install -y apt-transport-https ca-certificates curl
 
 apt-get update -y
-apt-mark unhold kubelet kubectl
 apt-get update -y
 apt-get install -y kubelet kubectl kubeadm
-apt-mark hold kubelet kubectl
 
 apt-get install -y wget
 
