@@ -136,7 +136,7 @@ resource "helm_release" "openebs" {
   name       = "openebs"
   repository = "https://openebs.github.io/openebs"
   chart      = "openebs"
-  version    = "4.1.2"
+  version    = "4.1.3"
   namespace  = kubernetes_namespace.openebs.metadata[0].name
 
   set {
@@ -154,6 +154,22 @@ resource "helm_release" "openebs" {
   set {
     name = "engines.replicated.mayastor.enabled"
     value = true
+  }
+  set {
+    name  = "mayastor.loki-stack.enabled"
+    value = false
+  }
+  set {
+    name  = "preUpgradeHook.image.registry"
+    value = "registry.k8s.io"
+  }
+  set {
+    name  = "preUpgradeHook.image.repo"
+    value = "kubectl"
+  }
+  set {
+    name  = "preUpgradeHook.image.tag"
+    value = "v1.28.0"
   }
 }
 
