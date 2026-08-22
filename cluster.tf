@@ -39,11 +39,11 @@ resource "helm_release" "nginx_ingress" {
   chart      = "ingress-nginx"
   version    = "4.11.3"
   set {
-    name = "controller.service.type"
+    name  = "controller.service.type"
     value = "NodePort"
   }
   set {
-    name = "controller.dnsPolicy"
+    name  = "controller.dnsPolicy"
     value = "ClusterFirstWithHostNet"
   }
   set {
@@ -54,7 +54,7 @@ resource "helm_release" "nginx_ingress" {
     value = "DaemonSet"
   }
   set {
-    name = "controller.hostNetwork"
+    name  = "controller.hostNetwork"
     value = true
   }
   // set {
@@ -62,11 +62,11 @@ resource "helm_release" "nginx_ingress" {
   //   value = true
   // }
   set {
-    name = "controller.publishService.enabled"
+    name  = "controller.publishService.enabled"
     value = false
   }
   set {
-    name = "controller.reportNodeInternalIp"
+    name  = "controller.reportNodeInternalIp"
     value = true
   }
 }
@@ -148,11 +148,11 @@ resource "helm_release" "openebs" {
     value = false
   }
   set {
-    name = "mayastor.csi.node.kubeletDir"
+    name  = "mayastor.csi.node.kubeletDir"
     value = "/var/lib/kubelet"
   }
   set {
-    name = "engines.replicated.mayastor.enabled"
+    name  = "engines.replicated.mayastor.enabled"
     value = true
   }
   set {
@@ -179,11 +179,11 @@ resource "kubernetes_storage_class" "mayastor_loki" {
   }
   parameters = {
     protocol = "nvmf"
-    repl = "1"
+    repl     = "1"
   }
-  storage_provisioner = "io.openebs.csi-mayastor"
-  reclaim_policy = "Delete"
-  volume_binding_mode = "Immediate"
+  storage_provisioner    = "io.openebs.csi-mayastor"
+  reclaim_policy         = "Delete"
+  volume_binding_mode    = "Immediate"
   allow_volume_expansion = true
 }
 
@@ -193,21 +193,21 @@ resource "kubernetes_storage_class" "sql_db" {
   }
   parameters = {
     protocol = "nvmf"
-    repl = "2"
-    fsType = "xfs"
+    repl     = "2"
+    fsType   = "xfs"
   }
-  storage_provisioner = "io.openebs.csi-mayastor"
-  reclaim_policy = "Delete"
-  volume_binding_mode = "WaitForFirstConsumer"
+  storage_provisioner    = "io.openebs.csi-mayastor"
+  reclaim_policy         = "Delete"
+  volume_binding_mode    = "WaitForFirstConsumer"
   allow_volume_expansion = true
 }
 
 resource "kubernetes_manifest" "nick_disk_0" {
   manifest = {
     apiVersion = "openebs.io/v1beta2"
-    kind = "DiskPool"
+    kind       = "DiskPool"
     metadata = {
-      name = "nick-0"
+      name      = "nick-0"
       namespace = kubernetes_namespace.openebs.metadata[0].name
     }
     spec = {
@@ -228,9 +228,9 @@ resource "kubernetes_manifest" "nick_disk_0" {
 resource "kubernetes_manifest" "nick_disk_1" {
   manifest = {
     apiVersion = "openebs.io/v1beta2"
-    kind = "DiskPool"
+    kind       = "DiskPool"
     metadata = {
-      name = "nick-1"
+      name      = "nick-1"
       namespace = kubernetes_namespace.openebs.metadata[0].name
     }
     spec = {
@@ -251,9 +251,9 @@ resource "kubernetes_manifest" "nick_disk_1" {
 resource "kubernetes_manifest" "dweedledum_disk_pool" {
   manifest = {
     apiVersion = "openebs.io/v1beta2"
-    kind = "DiskPool"
+    kind       = "DiskPool"
     metadata = {
-      name = "dweedledum-sdb"
+      name      = "dweedledum-sdb"
       namespace = kubernetes_namespace.openebs.metadata[0].name
     }
     spec = {
@@ -268,9 +268,9 @@ resource "kubernetes_manifest" "dweedledum_disk_pool" {
 resource "kubernetes_manifest" "big_boi_disk_pool" {
   manifest = {
     apiVersion = "openebs.io/v1beta2"
-    kind = "DiskPool"
+    kind       = "DiskPool"
     metadata = {
-      name = "big-boi-sda"
+      name      = "big-boi-sda"
       namespace = kubernetes_namespace.openebs.metadata[0].name
     }
     spec = {
@@ -302,13 +302,13 @@ resource "kubernetes_cluster_role_binding" "jack_admin" {
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind = "ClusterRole"
-    name = "cluster-admin"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
   }
   subject {
     api_group = "rbac.authorization.k8s.io"
-    kind = "User"
-    name = "jack"
+    kind      = "User"
+    name      = "jack"
   }
 }
 
