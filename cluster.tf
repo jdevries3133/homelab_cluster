@@ -282,6 +282,20 @@ resource "kubernetes_manifest" "big_boi_disk_pool" {
   }
 }
 
+resource "kubernetes_namespace" "cloudnativepg" {
+  metadata {
+    name = "cloudnative-pg"
+  }
+}
+
+resource "helm_release" "cloudnativepg" {
+  name       = "cloudnativepg"
+  repository = "https://cloudnative-pg.github.io/charts"
+  chart      = "cloudnative-pg"
+  version    = "0.29.0"
+  namespace  = kubernetes_namespace.cloudnativepg.metadata[0].name
+}
+
 resource "kubernetes_cluster_role_binding" "jack_admin" {
   metadata {
     name = "jack-admin"
