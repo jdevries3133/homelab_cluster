@@ -173,6 +173,20 @@ resource "helm_release" "openebs" {
   }
 }
 
+resource "kubernetes_storage_class" "mayastor_loki" {
+  metadata {
+    name = "mayastor-loki-localpv"
+  }
+  parameters = {
+    protocol = "nvmf"
+    repl = "1"
+  }
+  storage_provisioner = "io.openebs.csi-mayastor"
+  reclaim_policy = "Delete"
+  volume_binding_mode = "Immediate"
+  allow_volume_expansion = true
+}
+
 resource "kubernetes_storage_class" "sql_db" {
   metadata {
     name = "sql-db"
